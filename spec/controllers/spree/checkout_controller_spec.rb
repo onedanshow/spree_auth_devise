@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Spree::CheckoutController do
   let(:order) { FactoryGirl.create(:order_with_totals, :email => nil, :user => nil) }
-  let(:user) { mock_model Spree::User, :last_incomplete_spree_order => nil, :has_spree_role? => true }
+  let(:user) { mock_model Spree::User, :last_incomplete_spree_order => nil, :has_spree_role? => true, :spree_api_key => 'fake' }
   let(:token) { 'some_token' }
 
   before do
@@ -21,7 +21,7 @@ describe Spree::CheckoutController do
         before { controller.stub :spree_current_user => user }
 
         it 'should proceed to the first checkout step' do
-          spree_get :edit, { :state => 'address' } 
+          spree_get :edit, { :state => 'address' }
           response.should render_template :edit
         end
       end
@@ -78,7 +78,7 @@ describe Spree::CheckoutController do
         it 'should redirect to the tokenized order view' do
           spree_post :update, { :state => 'confirm' }, { :access_token => "ABC" }
           response.should redirect_to spree.token_order_path(order, 'ABC')
-          flash.notice.should == I18n.t(:order_processed_successfully)
+          flash.notice.should == Spree.t(:order_processed_successfully)
         end
       end
 

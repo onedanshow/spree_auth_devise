@@ -1,18 +1,20 @@
 Spree::Core::Engine.routes.draw do
-  devise_for :user,
+  devise_for :spree_user,
              :class_name => 'Spree::User',
              :controllers => { :sessions => 'spree/user_sessions',
                                :registrations => 'spree/user_registrations',
                                :passwords => 'spree/user_passwords' },
              :skip => [:unlocks, :omniauth_callbacks],
-             :path_names => { :sign_out => 'logout' }
+             :path_names => { :sign_out => 'logout' },
+             :path_prefix => :user
 end
 
 Spree::Core::Engine.routes.prepend do
   resources :users, :only => [:edit, :update]
 
-  devise_scope :user do
+  devise_scope :spree_user do
     get '/login' => 'user_sessions#new', :as => :login
+    get '/logout' => 'user_sessions#destroy', :as => :logout
     get '/signup' => 'user_registrations#new', :as => :signup
   end
 

@@ -28,7 +28,7 @@ module Spree
             @user.spree_roles = roles.reject(&:blank?).collect{|r| Spree::Role.find(r)}
           end
 
-          flash.now[:notice] = t(:created_successfully)
+          flash.now[:success] = Spree.t(:created_successfully)
           render :edit
         else
           render :new
@@ -50,7 +50,7 @@ module Spree
             user = Spree::User.reset_password_by_token(params[:user])
             sign_in(@user, :event => :authentication, :bypass => !Spree::Auth::Config[:signout_after_password_change])
           end
-          flash.now[:notice] = t(:account_updated)
+          flash.now[:success] = Spree.t(:account_updated)
           render :edit
         else
           render :edit
@@ -59,46 +59,45 @@ module Spree
 
       def generate_api_key
         if @user.generate_spree_api_key!
-          flash.notice = t('key_generated', :scope => 'spree.api')
+          flash[:success] = Spree.t('api.key_generated')
         end
         redirect_to edit_admin_user_path(@user)
       end
 
       def clear_api_key
         if @user.clear_spree_api_key!
-          flash.notice = t('key_cleared', :scope => 'spree.api')
+          flash[:success] = Spree.t('api.key_cleared')
         end
         redirect_to edit_admin_user_path(@user)
       end
-
 
       protected
 
         def collection
           return @collection if @collection.present?
-          unless request.xhr?
-            @search = Spree::User.registered.ransack(params[:q])
-            @collection = @search.result.page(params[:page]).per(Spree::Config[:admin_products_per_page])
-          else
+          if request.xhr? && params[:q].present?
             #disabling proper nested include here due to rails 3.1 bug
             #@collection = User.includes(:bill_address => [:state, :country], :ship_address => [:state, :country]).
-            @collection = Spree::User.includes(:bill_address, :ship_address).
-                              where("spree_users.email #{LIKE} :search
+            @collection = Spree::User.includes(:bill_address, :ship_address)
+                              .where("spree_users.email #{LIKE} :search
                                      OR (spree_addresses.firstname #{LIKE} :search AND spree_addresses.id = spree_users.bill_address_id)
                                      OR (spree_addresses.lastname  #{LIKE} :search AND spree_addresses.id = spree_users.bill_address_id)
                                      OR (spree_addresses.firstname #{LIKE} :search AND spree_addresses.id = spree_users.ship_address_id)
                                      OR (spree_addresses.lastname  #{LIKE} :search AND spree_addresses.id = spree_users.ship_address_id)",
-              { :search => "#{params[:q].strip}%" }).
-                limit(params[:limit] || 100)
-            end
+                                    { :search => "#{params[:q].strip}%" })
+                              .limit(params[:limit] || 100)
+          else
+            @search = Spree::User.registered.ransack(params[:q])
+            @collection = @search.result.page(params[:page]).per(Spree::Config[:admin_products_per_page])
           end
+        end
 
       private
 
         # handling raise from Spree::Admin::ResourceController#destroy
         def user_destroy_with_orders_error
           invoke_callbacks(:destroy, :fails)
-          render :status => :forbidden, :text => t(:error_user_destroy_with_orders)
+          render :status => :forbidden, :text => Spree.t(:error_user_destroy_with_orders)
         end
 
         # Allow different formats of json data to suit different ajax calls

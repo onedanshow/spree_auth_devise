@@ -13,12 +13,12 @@ class Spree::UserSessionsController < Devise::SessionsController
   ssl_allowed :login_bar
 
   def create
-    authenticate_user!
+    authenticate_spree_user!
 
-    if user_signed_in?
+    if spree_user_signed_in?
       respond_to do |format|
         format.html {
-          flash[:success] = t(:logged_in_succesfully)
+          flash[:success] = Spree.t(:logged_in_succesfully)
           redirect_back_or_default(after_sign_in_path_for(spree_current_user))
         }
         format.js {
@@ -44,11 +44,11 @@ class Spree::UserSessionsController < Devise::SessionsController
 
   private
     def accurate_title
-      t(:login)
+      Spree.t(:login)
     end
 
     def redirect_back_or_default(default)
-      redirect_to(session["user_return_to"] || default)
-      session["user_return_to"] = nil
+      redirect_to(session["spree_user_return_to"] || default)
+      session["spree_user_return_to"] = nil
     end
 end

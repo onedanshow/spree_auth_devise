@@ -1,4 +1,4 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
 gem 'json'
 gem 'sqlite3'
@@ -26,7 +26,10 @@ group :test do
  # gem 'debugger'
 end
 
-gem 'spree', :github => "spree/spree", :branch => "master"
+gem 'spree_core', :github => "spree/spree", :branch => "master"
+gem 'spree_frontend', :github => "spree/spree", :branch => "master"
+gem 'spree_backend', :github => "spree/spree", :branch => "master"
+gem 'spree_api', :github => "spree/spree", :branch => "master"
 gem 'pry'
 
 gemspec
