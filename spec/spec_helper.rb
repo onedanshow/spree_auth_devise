@@ -23,7 +23,7 @@ RSpec.configure do |config|
   # config.mock_with :flexmock
   # config.mock_with :rr
   config.mock_with :rspec
-
+  config.color = true
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
@@ -51,7 +51,7 @@ RSpec.configure do |config|
   config.include Spree::TestingSupport::UrlHelpers
   config.include Spree::TestingSupport::ControllerRequests, :type => :controller
   config.include Devise::TestHelpers, :type => :controller
-  config.include Rack::Test::Methods, :type => :requests
+  config.include Rack::Test::Methods, :type => :feature
 end
 
 if defined? CanCan::Ability

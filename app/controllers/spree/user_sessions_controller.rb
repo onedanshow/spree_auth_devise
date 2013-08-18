@@ -32,12 +32,6 @@ class Spree::UserSessionsController < Devise::SessionsController
     end
   end
 
-  def destroy
-    cookies.clear
-    session.clear
-    super
-  end
-
   def nav_bar
     render :partial => 'spree/shared/nav_bar'
   end
