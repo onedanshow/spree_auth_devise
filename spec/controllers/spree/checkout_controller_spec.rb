@@ -21,6 +21,8 @@ describe Spree::CheckoutController do
         before { controller.stub :spree_current_user => user }
 
         it 'should proceed to the first checkout step' do
+          user.should_receive(:ship_address)
+
           spree_get :edit, { :state => 'address' }
           response.should render_template :edit
         end
@@ -44,6 +46,8 @@ describe Spree::CheckoutController do
         before { controller.stub :spree_current_user => user }
 
         it 'should proceed to the first checkout step' do
+          user.should_receive(:ship_address)
+
           spree_get :edit, { :state => 'address' }
           response.should render_template :edit
         end
@@ -117,13 +121,13 @@ describe Spree::CheckoutController do
       controller.stub :check_authorization
       order.stub :update_attributes => true
       controller.should_not_receive :check_registration
-      spree_put :update_registration
+      spree_put :update_registration, { :order => { } }
     end
 
     it 'should render the registration view if unable to save' do
       controller.stub :check_authorization
-      order.should_receive(:update_attributes).with('email' => 'invalid').and_return false
       spree_put :update_registration, { :order => { :email => 'invalid' } }
+      flash[:registration_error].should == I18n.t(:email_is_invalid, :scope => [:errors, :messages])
       response.should render_template :registration
     end
 

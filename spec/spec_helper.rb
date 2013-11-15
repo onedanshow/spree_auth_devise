@@ -1,6 +1,9 @@
 # This file is copied to ~/spec when you run 'ruby script/generate rspec'
 # from the project root directory.
 ENV['RAILS_ENV'] ||= 'test'
+if ENV["COVERAGE"]
+  require 'simplecov'
+end
 require File.expand_path('../dummy/config/environment', __FILE__)
 require 'rspec/rails'
 require 'database_cleaner'
@@ -13,6 +16,7 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 require 'spree/testing_support/factories'
 require 'spree/testing_support/controller_requests'
 require 'spree/testing_support/capybara_ext'
+require 'ffaker'
 
 RSpec.configure do |config|
   # == Mock Framework
@@ -52,6 +56,7 @@ RSpec.configure do |config|
   config.include Spree::TestingSupport::ControllerRequests, :type => :controller
   config.include Devise::TestHelpers, :type => :controller
   config.include Rack::Test::Methods, :type => :feature
+  config.include Capybara::DSL
 end
 
 if defined? CanCan::Ability
